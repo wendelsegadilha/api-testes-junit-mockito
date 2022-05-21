@@ -7,6 +7,7 @@ import xyz.wendelsegadilha.apijunitmockito.domain.User;
 import xyz.wendelsegadilha.apijunitmockito.domain.dto.UserDTO;
 import xyz.wendelsegadilha.apijunitmockito.repositories.UserRepository;
 import xyz.wendelsegadilha.apijunitmockito.services.UserService;
+import xyz.wendelsegadilha.apijunitmockito.services.exceptions.DataIntegratyViolationException;
 import xyz.wendelsegadilha.apijunitmockito.services.exceptions.ObjectNotFoundException;
 
 import java.util.List;
@@ -34,7 +35,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User create(UserDTO obj) {
+        /* Verifica se já existe um usuário cadastrado com o mesmo e-mail */
+        findByEmail(obj);
         return repository.save(mapper.map(obj, User.class));
+    }
+
+    private void findByEmail(UserDTO obj){
+        Optional<User> user = repository.findByEmail(obj.getEmail());
+        if (user.isPresent()) {
+            throw new DataIntegratyViolationException("E-mail já cadastrado no sistema");
+        }
     }
 
 
