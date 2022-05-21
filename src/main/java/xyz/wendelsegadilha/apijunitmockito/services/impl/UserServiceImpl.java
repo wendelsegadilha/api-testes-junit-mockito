@@ -7,6 +7,7 @@ import xyz.wendelsegadilha.apijunitmockito.repositories.UserRepository;
 import xyz.wendelsegadilha.apijunitmockito.services.UserService;
 import xyz.wendelsegadilha.apijunitmockito.services.exceptions.ObjectNotFoundException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,4 +21,11 @@ public class UserServiceImpl implements UserService {
         Optional<User> obj = repository.findById(id);
         return obj.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado"));
     }
+
+    @Override
+    public List<User> findAll() {
+        return repository.findAll();
+    }
+
+
 }
