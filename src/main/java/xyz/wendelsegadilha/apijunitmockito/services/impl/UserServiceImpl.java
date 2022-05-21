@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import xyz.wendelsegadilha.apijunitmockito.domain.User;
 import xyz.wendelsegadilha.apijunitmockito.repositories.UserRepository;
 import xyz.wendelsegadilha.apijunitmockito.services.UserService;
+import xyz.wendelsegadilha.apijunitmockito.services.exceptions.ObjectNotFoundException;
 
 import java.util.Optional;
 
@@ -17,6 +18,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Integer id) {
         Optional<User> obj = repository.findById(id);
-        return obj.orElse(null);
+        return obj.orElseThrow(() -> new ObjectNotFoundException("Objeto não encontrado"));
     }
 }
