@@ -133,6 +133,20 @@ class UserServiceImplTest {
     }
 
     @Test
+    void updateFailTest() {
+        when(repository.findByEmail(anyString())).thenReturn(optionalUser);
+
+        try{
+            optionalUser.get().setId(2);
+            service.update(userDTO);
+        } catch (Exception ex) {
+            assertEquals(DataIntegratyViolationException.class, ex.getClass());
+            assertEquals(E_MAIL_JA_CADASTRADO_NO_SISTEMA, ex.getMessage());
+        }
+
+    }
+
+    @Test
     void delete() {
     }
 
