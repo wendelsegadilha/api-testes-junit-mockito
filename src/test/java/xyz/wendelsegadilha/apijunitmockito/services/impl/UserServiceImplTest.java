@@ -4,18 +4,20 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
 import xyz.wendelsegadilha.apijunitmockito.domain.User;
 import xyz.wendelsegadilha.apijunitmockito.domain.dto.UserDTO;
 import xyz.wendelsegadilha.apijunitmockito.repositories.UserRepository;
+import xyz.wendelsegadilha.apijunitmockito.services.exceptions.ObjectNotFoundException;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class UserServiceImplTest {
@@ -44,8 +46,8 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findByIdTest() {
-        Mockito.when(repository.findById(Mockito.anyInt())).thenReturn(optionalUser);
+    void findByIdSuccessTest() {
+        when(repository.findById(anyInt())).thenReturn(optionalUser);
 
         User response = service.findById(ID);
 
@@ -54,6 +56,18 @@ class UserServiceImplTest {
         assertEquals(ID, response.getId());
         assertEquals(NAME, response.getName());
         assertEquals(EMAIL, response.getEmail());
+    }
+
+    @Test
+    void findByIdFailTest() {
+        when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException("Objeto não encontrado"));
+
+        try{
+            repository.findById(ID);
+        } catch (ObjectNotFoundException ex) {
+            assertEquals(ObjectNotFoundException.class, ex.getClass());
+            assertEquals("Objeto não encontrado", ex.getMessage());
+        }
     }
 
     @Test
