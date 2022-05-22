@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import xyz.wendelsegadilha.apijunitmockito.domain.User;
 import xyz.wendelsegadilha.apijunitmockito.domain.dto.UserDTO;
 import xyz.wendelsegadilha.apijunitmockito.repositories.UserRepository;
+import xyz.wendelsegadilha.apijunitmockito.services.exceptions.DataIntegratyViolationException;
 import xyz.wendelsegadilha.apijunitmockito.services.exceptions.ObjectNotFoundException;
 
 import java.util.List;
@@ -17,8 +18,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -101,6 +101,20 @@ class UserServiceImplTest {
         assertEquals(NAME, response.getName());
         assertEquals(EMAIL, response.getEmail());
         assertEquals(PASSWORD, response.getPassword());
+    }
+
+    @Test
+    void createFailTest() {
+        when(repository.findByEmail(anyString())).thenReturn(optionalUser);
+
+        try{
+            optionalUser.get().setId(2);
+            service.create(userDTO);
+        } catch (Exception ex) {
+            assertEquals(DataIntegratyViolationException.class, ex.getClass());
+            assertEquals("E-mail já cadastrado no sistema", ex.getMessage());
+        }
+
     }
 
     @Test
