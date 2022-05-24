@@ -1,6 +1,5 @@
 package xyz.wendelsegadilha.apijunitmockito.resources;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -8,11 +7,17 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import xyz.wendelsegadilha.apijunitmockito.domain.User;
 import xyz.wendelsegadilha.apijunitmockito.domain.dto.UserDTO;
 import xyz.wendelsegadilha.apijunitmockito.services.impl.UserServiceImpl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
@@ -54,21 +59,37 @@ class UserResourceTest {
 
         ResponseEntity<UserDTO> response = resource.findById(ID);
 
-        Assertions.assertNotNull(response);
-        Assertions.assertNotNull(response.getBody());
+        assertNotNull(response);
+        assertNotNull(response.getBody());
 
-        Assertions.assertEquals(ResponseEntity.class, response.getClass());
-        Assertions.assertEquals(UserDTO.class, response.getBody().getClass());
+        assertEquals(ResponseEntity.class, response.getClass());
+        assertEquals(UserDTO.class, response.getBody().getClass());
 
-        Assertions.assertEquals(ID, response.getBody().getId());
-        Assertions.assertEquals(NAME, response.getBody().getName());
-        Assertions.assertEquals(EMAIL, response.getBody().getEmail());
-        Assertions.assertEquals(PASSWORD, response.getBody().getPassword());
+        assertEquals(ID, response.getBody().getId());
+        assertEquals(NAME, response.getBody().getName());
+        assertEquals(EMAIL, response.getBody().getEmail());
+        assertEquals(PASSWORD, response.getBody().getPassword());
 
     }
 
     @Test
-    void findAll() {
+    void findAllTest() {
+        when(service.findAll()).thenReturn(List.of(user));
+        when(mapper.map(any(), any())).thenReturn(userDTO);
+
+        ResponseEntity<List<UserDTO>> response = resource.findAll();
+
+        assertNotNull(response);
+        assertNotNull(response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(ResponseEntity.class, response.getClass());
+        assertEquals(ArrayList.class, response.getBody().getClass());
+        assertEquals(UserDTO.class, response.getBody().get(INDEX).getClass());
+        assertEquals(ID, response.getBody().get(INDEX).getId());
+        assertEquals(NAME, response.getBody().get(INDEX).getName());
+        assertEquals(EMAIL, response.getBody().get(INDEX).getEmail());
+        assertEquals(PASSWORD, response.getBody().get(INDEX).getPassword());
+
     }
 
     @Test
